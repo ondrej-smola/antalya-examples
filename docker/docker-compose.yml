@@ -2,7 +2,6 @@ services:
   spark-iceberg:
     image: tabulario/spark-iceberg
     container_name: spark-iceberg
-    build: spark/
     depends_on:
       - rest
       - minio
@@ -26,15 +25,17 @@ services:
       - CATALOG_WAREHOUSE=s3://iceberg_data/
       - CATALOG_IO__IMPL=org.apache.iceberg.aws.s3.S3FileIO
       - CATALOG_S3_ENDPOINT=http://minio:9000
-  clickhouse:
+  antalya:
     #image: clickhouse:24.12.3.47
     image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
     container_name: antalya
+    hostname: antalya
     ports:
       - 9000:9000
     volumes:
       - ./config.d:/etc/clickhouse-server/config.d
       - ./users.d:/etc/clickhouse-server/users.d
+      - ./logs/antalya:/var/log/clickhouse-server
     environment:
       - AWS_ACCESS_KEY_ID=minio
       - AWS_SECRET_ACCESS_KEY=minio123
@@ -43,9 +44,11 @@ services:
     #image: clickhouse:24.12.3.47
     image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
     container_name: swarm-1
+    hostname: swarm-1
     volumes:
       - ./config.d:/etc/clickhouse-server/config.d
       - ./users.d:/etc/clickhouse-server/users.d
+      - ./logs/swarm-1:/var/log/clickhouse-server
     environment:
       - AWS_ACCESS_KEY_ID=minio
       - AWS_SECRET_ACCESS_KEY=minio123
@@ -54,9 +57,11 @@ services:
     #image: clickhouse:24.12.3.47
     image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
     container_name: swarm-2
+    hostname: swarm-2
     volumes:
       - ./config.d:/etc/clickhouse-server/config.d
       - ./users.d:/etc/clickhouse-server/users.d
+      - ./logs/swarm-2:/var/log/clickhouse-server
     environment:
       - AWS_ACCESS_KEY_ID=minio
       - AWS_SECRET_ACCESS_KEY=minio123
