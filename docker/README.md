@@ -79,7 +79,9 @@ directory of your virtual environment. There is a bug in some
 environments that prevents pyiceberg libraries from loading properly. 
 Copy the scripts into the directory and run them there. 
 
-### Using ClickHouse. 
+### Using new Antalya features
+
+### Using Antalya Features for Iceberg
 
 Connect to ClickHouse and use the following commands to run queries. 
 You can access data in 3 different ways. 
@@ -88,16 +90,53 @@ You can access data in 3 different ways.
 
 You can connect to the Parquet files directly without reading Iceberg 
 metadata as follows. You just have to know where the files are located
-on S3.
+on S3. 
 ```
-SELECT count() 
+SELECT hostName(), count() 
 FROM s3('http://minio:9000/warehouse/data/data/**/**.parquet')
 
-SELECT * 
+SELECT hostName(), * 
 FROM s3('http://minio:9000/warehouse/data/data/**/**.parquet')
 ```
 Both of them read all files from all Iceberg snapshots. If you remove 
 or change data they won't give the right answer. 
+
+#### Direct query on Parquet files using Antalya swarm cluster. 
+
+First, make sure you are talking to an Antalya build. 
+```
+SELECT version()
+
+   ┌─version()─────────────────────┐
+1. │ 24.12.2.20101.altinityantalya │
+   └───────────────────────────────┘
+```
+
+You can dispatch queries to the Antalya swarm cluster using s3() 
+function with the object_storage_cluster setting. Or you can use 
+s3Cluster() with the swarm cluster name. 
+
+```
+SELECT hostName() AS host, count() 
+FROM s3('http://minio:9000/warehouse/data/data/**/**.parquet')
+GROUP BY host
+SETTINGS use_hive_partitioning=1, object_storage_cluster='swarm'
+
+SELECT hostName() AS host, * 
+FROM s3Cluster('swarm', 'http://minio:9000/warehouse/data/data/**/**.parquet')
+SETTINGS use_hive_partitioning=1
+```
+
+If you are curious to find out where your query was actually processed,
+you can find out easily. Take the query_id that clickhouse-client prints
+and run a query like the following. You'll see all query log records.
+
+```
+SELECT hostName() AS host, type, initial_query_id, is_initial_query, query
+FROM clusterAllReplicas('all', system.query_log)
+WHERE (type = 'QueryStart') 
+AND (initial_query_id = '8051eef1-e68b-491a-b63d-fac0c8d6ef27')\G
+```
 
 #### Query using Iceberg metadata without a catalog
 
@@ -114,6 +153,22 @@ FROM iceberg('http://minio:9000/warehouse/data')
 
 Notice that the path is to your data directory, which has metadata and data
 under it. There will be trouble if it contains more than one table. 
+
+#### Query on Iceberg tables using Antalya swarm cluster
+
+(Partially works in Antalya build 24.12.2.20101. )
+
+You can use the swarm cluster also with the iceberg table function. Here 
+is an example. To get this to work you must use the icebergS3Cluster()
+function. 
+```
+SELECT hostName() AS host, count()
+FROM icebergS3Cluster('swarm', 'http://minio:9000/warehouse/data')
+GROUP BY host
+SETTINGS object_storage_cluster = 'swarm'
+```
+
+This will work with regular iceberg() table functions in the next build. 
 
 #### Query using the Iceberg REST catalog
 
@@ -167,6 +222,11 @@ ENGINE = Merge(REGEXP('local|datalake'), '.*bids')
 SELECT * FROM all_bids
 ;
 
+#### Query on Iceberg database using Antalya swarm cluster
+
+(Does not work in Antalya build 24.12.2.20101. Will be implemented in
+the next build.)
+
 ### Using Spark
 
 Connect to the spark-iceberg container command line. 
@@ -195,7 +255,11 @@ spark.sql("SELECT * FROM iceberg.bids").show()
 Try selecting data each of the three ways in ClickHouse to see which of them 
 still give the right answers. 
 
-## Fetching values from catalog using curl
+## Fetching values from Iceberg catalog using curl
+
+The Iceberg REST API is simple to query using curl. The documentation is 
+effectively [the full REST spec in the Iceberg GitHub Repo](https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml). Meanwhile here 
+are a few examples that you can try on this project. 
 
 Find namespaces. 
 ```

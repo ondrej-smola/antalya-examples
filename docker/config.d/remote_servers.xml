@@ -1,15 +1,15 @@
 <clickhouse>
     <remote_servers>
         <!-- User-specified clusters -->
-        <initiator>
+        <antalya>
             <shard>
                 <internal_replication>true</internal_replication>
                 <replica>
-                    <host>clickhouse</host>
+                    <host>antalya</host>
                     <port>9000</port>
                 </replica>
             </shard>
-        </initiator>
+        </antalya>
         <swarm>
             <shard>
                 <internal_replication>true</internal_replication>
@@ -26,5 +26,28 @@
                 </replica>
             </shard>
         </swarm>
+        <all>
+            <shard>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>antalya</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+            <shard>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>swarm-1</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+            <shard>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>swarm-2</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </all>
     </remote_servers>
 </clickhouse>
