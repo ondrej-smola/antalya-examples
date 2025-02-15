@@ -33,20 +33,30 @@ services:
     ports:
       - 9000:9000
     volumes:
-      - ./config.d:/etc/clickhouse-server/config.d
+      - ./config.d/antalya:/etc/clickhouse-server/config.d
       - ./users.d:/etc/clickhouse-server/users.d
       - ./logs/antalya:/var/log/clickhouse-server
     environment:
       - AWS_ACCESS_KEY_ID=minio
       - AWS_SECRET_ACCESS_KEY=minio123
       - AWS_REGION=us-east-1
+  keeper:
+    image: altinity/clickhouse-keeper:24.12.2.20101.altinityantalya
+    container_name: keeper
+    hostname: keeper
+    ports:
+      - 2181:2181
+    volumes:
+      # Note special location of Keeper config overrides. 
+      - ./config.d/keeper:/etc/clickhouse-keeper/keeper_config.d
+      - ./logs/keeper:/var/log/clickhouse-keeper
   swarm-1:
     #image: clickhouse:24.12.3.47
     image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
     container_name: swarm-1
     hostname: swarm-1
     volumes:
-      - ./config.d:/etc/clickhouse-server/config.d
+      - ./config.d/swarm:/etc/clickhouse-server/config.d
       - ./users.d:/etc/clickhouse-server/users.d
       - ./logs/swarm-1:/var/log/clickhouse-server
     environment:
@@ -59,7 +69,7 @@ services:
     container_name: swarm-2
     hostname: swarm-2
     volumes:
-      - ./config.d:/etc/clickhouse-server/config.d
+      - ./config.d/swarm:/etc/clickhouse-server/config.d
       - ./users.d:/etc/clickhouse-server/users.d
       - ./logs/swarm-2:/var/log/clickhouse-server
     environment:
