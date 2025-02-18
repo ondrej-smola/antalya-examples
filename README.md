@@ -1,12 +1,11 @@
-# Altinity Antalya Examples Project
-
-Altinity Antalya is a new branch of ClickHouse designed to integrate
-real-time analytic query with data lakes. It will extend ClickHouse
-in the following ways. 
-
 <a href="https://altinity.com/slack">
   <img src="https://img.shields.io/static/v1?logo=slack&logoColor=959DA5&label=Slack&labelColor=333a41&message=join%20conversation&color=3AC358" alt="AltinityDB Slack" />
 </a>
+
+# Altinity Antalya Examples Project
+
+Altinity Antalya is a new branch of ClickHouse designed to integrate
+real-time analytic query with data lakes. 
 
 ## Goals of Antalya
 
@@ -61,8 +60,8 @@ cd Antalya-ClickHouse
 git checkout project-antalya-24.12.2
 ```
 
-We will be changing the current Antalya branch to a more convenient
-location shortly.
+We will be changing the active Antalya branch name to be more 
+memory-friendly shortly. 
 
 ## Building
 
