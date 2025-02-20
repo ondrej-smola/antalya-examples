@@ -50,6 +50,13 @@ docker run altinity/clickhouse-server:24.12.2.20101.altinityantalya
 docker run altinity/clickhouse-keeper:24.12.2.20101.altinityantalya
 ```
 
+## Documentation
+
+Look in the docs directory for current documentation. 
+
+* [Antalya Concepts Guide](docs/concepts.md) 
+* [Command and Configuration Reference](docs/reference.md)
+
 ## Code
 
 To access Antalya code run the following commands. 

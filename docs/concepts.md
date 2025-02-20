@@ -1,11 +1,11 @@
-# Antalya Concepts
+# Antalya Concepts Guide
 
 ## Overview
 
 Antalya is an extended version of ClickHouse that offers all existing
 capabilities plus additional features that allow Antalya clusters to
 use Iceberg as shared storage. The following diagram shows the main 
-of an Antalya installation. 
+parts of an Antalya installation. 
 
 ![Antalya Reference Architecture](images/Antalya-Reference-Architecture-2025-02-17.png)
 
@@ -13,7 +13,7 @@ of an Antalya installation.
 
 Antalya builds are based on upstream ClickHouse and follow ClickHouse 
 versioning. They are intended as drop-in replacements for the 
-matching ClickHouse version, including Altinity Stable Builds. 
+matching ClickHouse version as well as Altinity Stable Builds. 
 
 ## Iceberg, Parquet, and Object Storage
 
@@ -26,6 +26,36 @@ extensions include the following:
 * Iceberg partition pruning (compatible with upstream)
 * Parquet file metadata cache 
 * Boolean and int type support on native Parquet reader (compatible with upstream)
+
+## Iceberg Specification Support
+
+Generally speaking Antalya Iceberg support matches upstream ClickHouse.
+Antalya supports reading Iceberg V2. It cannot write to Iceberg
+tables. For that you must currently use other tools, such as Spark
+or pyiceberg.
+
+There are a number of bugs and missing features in Iceberg support. If
+you find something unexpected, please log an issue on the antalya-examples
+project for now. 
+
+### Iceberg Database Engine
+
+The Iceberg database engine encapsulates the tables in a single Iceberg
+REST catalog.  REST catalogs enumerate the metadata for Iceberg tables,
+and the database engine makes them look like ClickHouse tables. This is
+the most natural way to interate with Iceberg tables.
+
+### Iceberg Table Engine and Table Function
+
+Antalya offers Iceberg table engine and function just like upstream 
+ClickHouse. They encapsulate a single table using the object storage
+path to locate the table metadata and data. Currently only one table
+can use the path. 
+
+### Hive and Plain S3
+
+Antalya can also read data directly from S3 as well as Hive format. 
+The capabilities are largely identical to upstream ClickHouse. 
 
 ## Swarm Clusters
 
@@ -60,7 +90,7 @@ Antalya uses Keeper servers to implement swarm cluster auto-discovery.
    the cluster grows or shrinks. 
 
 Antalya also supports the notion of an auxiliary Keeper server for cluster
-discover. This means that Antalya clusters can use one Keeper ensemble
+discovery. This means that Antalya clusters can use one Keeper ensemble
 to control replication, and another Keeper server for auto-discovery.
 
 Swarm clusters do not use replication. They only need Keeper for
