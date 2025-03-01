@@ -4,33 +4,54 @@
 
 # Altinity Antalya Examples Project
 
-Altinity Antalya is a new branch of ClickHouse designed to integrate
-real-time analytic query with data lakes. 
+Altinity Antalya is a new branch of ClickHouse code designed to
+integrate real-time analytic query with data lakes.  This project
+provides documentation as well as working code examples to help you use
+and contribute to Antalya.
 
-## Goals of Antalya
+## Antalya Goals and Roadmap
 
-* Adapt ClickHouse to use Iceberg tables as shared storage.
-* Enable ClickHouse clusters to extend existing tables onto unlimited
-Iceberg storage.  
-* Support novel analytic architectures that integrate ClickHouse
-with tools like Spark and pyiceberg.  
-* Scale ingest, compaction, transformation, and query easily and 
-independently.  
-* Allow users to query native ClickHouse and shared Iceberg data 
-seamlessly using a single SQL connection.
-* Simplify backup and DR by leveraging Iceberg snapshots.
-* Maintain full compability with upstream ClickHouse features and
-bug fixes.
+The main goals of Antalya are as follows. 
 
-Antalya is licensed under Apached 2.0. There are no feature hold-backs. 
+* Enable real-time analytics to work off a single copy of
+  data that is shared with AI and data science applications.
+* Provide a single SQL endpoint for native ClickHouse and data lake data.
+* Use open table formats to enable easy access from any application type.
+* Separate compute and storage; moreover, allow usres to scale compute 
+  for ingest, merge, transformatino, and query independently. 
 
-This project provides documentation as well as working code examples 
-to help you use and contribute to Antalya. 
+Antalya will implement these goals through the following concrete features:
+
+1. Optimize query performance of ClickHouse on Parquet files stored 
+   S3-compatible object storage. 
+2. Enable ClickHouse clusters to add pools of stateless servers aka swarm
+   clusters that handle query and insert operations on shared object storage 
+   files with linear scaling.
+3. Adapt ClickHouse to use Iceberg tables as shared storage.
+4. Enable ClickHouse clusters to extend existing tables onto unlimited
+   Iceberg storage with transparent query across both native MergeTree and
+   Parquet data. 
+5. Simplify backup and DR by leveraging Iceberg snapshots.
+6. Maintain full compability with upstream ClickHouse features and
+   bug fixes.
+
+At this time Antalya builds demonstrate features 1, 2, 3 (partially), and 6. 
+
+## Licensing
+
+Antalya is licensed under Apache 2.0 license. There are no feature
+hold-backs.
 
 ## Quick Start
 
 See the [Docker Quick Start](./docker/README.md) to try out Antalya in
-a few minutes using Docker.
+a few minutes using Docker Compose on a laptop.
+
+## Scalable Swarm Example
+
+For a fully functional swarm cluster implemention, look at the
+[kubernetes](kubernetes/README.md) example. It demonstrates use of swarm
+clusters on a large blockchain dataset stored in Parquet.
 
 ## Antalya Binaries
 
