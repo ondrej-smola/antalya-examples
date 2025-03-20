@@ -19,7 +19,7 @@ spec:
           containers:
             - name: clickhouse-keeper
               imagePullPolicy: IfNotPresent
-              image: "altinity/clickhouse-keeper:24.12.2.20101.altinityantalya"
+              image: "altinity/clickhouse-keeper:24.12.2.20203.altinityantalya"
     volumeClaimTemplates:
       - name: default
         metadata:
