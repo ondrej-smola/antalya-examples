@@ -27,7 +27,7 @@ services:
       - CATALOG_S3_ENDPOINT=http://minio:9000
   antalya:
     #image: clickhouse:24.12.3.47
-    image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
+    image: altinity/clickhouse-server:24.12.2.20203.altinityantalya
     container_name: antalya
     hostname: antalya
     ports:
@@ -41,7 +41,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=minio123
       - AWS_REGION=us-east-1
   keeper:
-    image: altinity/clickhouse-keeper:24.12.2.20101.altinityantalya
+    image: altinity/clickhouse-keeper:24.12.2.20203.altinityantalya
     container_name: keeper
     hostname: keeper
     ports:
@@ -52,7 +52,7 @@ services:
       - ./logs/keeper:/var/log/clickhouse-keeper
   swarm-1:
     #image: clickhouse:24.12.3.47
-    image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
+    image: altinity/clickhouse-server:24.12.2.20203.altinityantalya
     container_name: swarm-1
     hostname: swarm-1
     volumes:
@@ -65,7 +65,7 @@ services:
       - AWS_REGION=us-east-1
   swarm-2:
     #image: clickhouse:24.12.3.47
-    image: altinity/clickhouse-server:24.12.2.20101.altinityantalya
+    image: altinity/clickhouse-server:24.12.2.20203.altinityantalya
     container_name: swarm-2
     hostname: swarm-2
     volumes:
