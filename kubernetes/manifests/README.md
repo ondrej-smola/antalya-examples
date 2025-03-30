@@ -23,8 +23,16 @@ Use Kubectl to install manifests in your default namespace.
 ```
 kubectl apply -f keeper.yaml
 kubectl apply -f vector.yaml
-kubectl apply -f swarm.yaml
+kubectl apply -f ebs/swarm.yaml
 ```
+
+The swarm servers use EBS volumes which integrate well with cluster autoscaling
+but are suboptimal for caches. 
+
+## NVMe SSD swarm support (experimental)
+
+The [nvme](./nvme) directory contains work in progress. See the
+[README.md](nvme/README.md) for more information.
 
 ## Verify installation
 

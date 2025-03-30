@@ -59,9 +59,11 @@ Try running a query using only the vector server.
 SELECT date, sum(output_count)
 FROM s3('s3://aws-public-blockchain/v1.0/btc/transactions/**.parquet', NOSIGN)
 WHERE date >= '2024-01-01' GROUP BY date ORDER BY date ASC
+SETTINGS use_hive_partitioning = 1
 ```
 
-This query will likely do nothing for a long time. You can cancel it using ^C.  
+This query will likely do nothing for a long time. Typical response time is about 
+120 seconds. You can cancel it using ^C.  
 
 Next let's try a query using the swarm. The object_storage_cluster
 setting points to the swarm cluster name.
@@ -69,7 +71,13 @@ setting points to the swarm cluster name.
 SELECT date, sum(output_count)
 FROM s3('s3://aws-public-blockchain/v1.0/btc/transactions/**.parquet', NOSIGN)
 WHERE date >= '2024-01-01' GROUP BY date ORDER BY date ASC
-SETTINGS use_hive_partitioning = 1, object_storage_cluster = 'swarm'
+SETTINGS use_hive_partitioning = 1, object_storage_cluster = 'swarm';
+
+SELECT date, sum(output_count)
+FROM s3('s3://aws-public-blockchain/v1.0/btc/transactions/**.parquet', NOSIGN)
+WHERE date >= '2024-01-01' GROUP BY date ORDER BY date ASC
+SETTINGS use_hive_partitioning = 1, object_storage_cluster = 'swarm',
+input_format_parquet_use_metadata_cache = 1;
 ```
 
 This query should complete in around 15 seconds with 4 swarm server
