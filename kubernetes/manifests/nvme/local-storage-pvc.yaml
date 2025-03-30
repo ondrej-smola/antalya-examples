@@ -1,0 +1,12 @@
+# Test PVC to see if we can claim a local volume. 
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: example-local-claim
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: nvme-ssd
