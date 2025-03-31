@@ -1,0 +1,71 @@
+apiVersion: "clickhouse.altinity.com/v1"
+kind: "ClickHouseInstallation"
+metadata:
+  name: "nvme-swarm"
+spec:
+  configuration:
+    clusters:
+      - name: "example"
+        layout:
+          replicas:
+          - templates:
+              podTemplate: replica
+          shardsCount: 4
+        templates:
+    zookeeper:
+        nodes:
+        - host: keeper-keeper
+          port: 2181
+    files:
+      config.d/remote_servers.xml: |
+        <clickhouse>
+          <allow_experimental_cluster_discovery>1</allow_experimental_cluster_discovery>
+          <remote_servers>
+            <!-- Swarm cluster built using remote discovery. -->
+            <swarm>
+              <discovery>
+                <path>/clickhouse/discovery/swarm</path>
+                <secret>secret_key</secret>
+              </discovery>
+            </swarm>
+          </remote_servers>
+        </clickhouse>
+  templates:
+    podTemplates:
+      - name: replica
+        spec:
+          nodeSelector:
+            node.kubernetes.io/instance-type: i8g.xlarge
+          tolerations:
+          # Run on clickhouse nodes that are dedicated to swarm servers.   
+          - key: "antalya"
+            operator: "Equal"
+            value: "nvme-swarm"
+            effect : "NoSchedule"
+          - key: "dedicated"
+            operator: "Equal"
+            value: "clickhouse"
+            effect : "NoSchedule"
+          affinity:
+            # Specify Pod anti-affinity to Pods with the same label "/app" on the same "hostname"
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchExpressions:
+                      - key: "clickhouse.altinity.com/app"
+                        operator: In
+                        values:
+                          - "chop"
+                  topologyKey: "kubernetes.io/hostname"
+          volumes:
+            - name: local-path
+              hostPath:
+                path: /nvme/disk/clickhouse
+                type: DirectoryOrCreate
+          containers:
+          - name: clickhouse
+            image: altinity/clickhouse-server:24.12.2.20203.altinityantalya
+            volumeMounts:
+              # Specify reference to volume on local filesystem
+              - name: local-path
+                mountPath: /var/lib/clickhouse

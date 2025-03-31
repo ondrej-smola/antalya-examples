@@ -3,13 +3,18 @@
 This directory shows how to set up an Antalya swarm cluster using 
 workers with local NVMe. It is still work in progress. 
 
-The current examples show prototype configuration using local storage 
-volumes. They apply to apply to AWS EKS only. 
+The current examples show prototype configuration using the following 
+options: 
+* hostPath volumes
+* local storage volumes
 
-## Enable NVMe file system provisioning on new workers
+Examples apply to apply to AWS EKS only. 
 
-This creates a daemonset that automatically formats NVMe
-drives on new EKS workers. The source code is currently located
+## NVMe SSD provisioning. 
+
+This is a prerequisite for either swarm type. It creates
+a daemonset that automatically formats NVMe drives
+on new EKS workers. The source code is currently located
 [here](https://github.com/hodgesrm/eks-nvme-ssd-provisioner). It will
 be transferred to the Altinity org shortly.
 
@@ -17,10 +22,10 @@ be transferred to the Altinity org shortly.
 kubectl apply -f eks-nvme-ssd-provisioner.yaml
 ```
 
-The daemonset has tolerations necessary to operate on swarm nodes. 
-Confirm that it is working by checking that a daemon appears on 
-each new worker node. You should also see log messages when the daemon 
-formats the file system, as shown by the following example. 
+The daemonset has tolerations necessary to operate on swarm nodes.
+Confirm that it is working by checking that a daemon appears on each new
+worker node. You should also see log messages when the daemon formats
+the file system on a new worker, as shown by the following example.
 
 ```
 $ kubectl logs eks-nvme-ssd-provisioner-zfmv7 -n kube-system
@@ -44,7 +49,28 @@ NVMe SSD provisioning is done and I will go to sleep now
 
 The log messages are helpful if you need to debug problems with mount locations. 
 
-## Enable local storage provisioning
+## Swarm using NVMe SSD with hostPath volumes (Experimental)
+
+The swarm-hostpath.yaml is configured to use
+[hostPath](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
+volumes. 
+
+```
+kubectl apply -f swarm-hostpath.yaml
+```
+
+The local path on the worker is /nvme/disk/clickhouse. /nvme/disk is a 
+soft link on the worker that points to the NVMe SSD file system mount 
+point. Swarms must use a mount point below this. 
+
+### Issues
+
+* During autoscaling the swarm node may get scheduled onto the worker 
+  before the eks-nvme-ssd-provisioner can format the disk and create 
+  the mount point. In this case the pod will not correctly mount the 
+  hostPath volume and will use the worker root storage instead.
+
+## Swarm using NVMe with local persistent volumes (Experimental)
 
 This is based on the [Local Persistence Volume Static Provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) project. 
 
