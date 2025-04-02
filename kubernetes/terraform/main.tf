@@ -1,5 +1,5 @@
 locals {
-  region = "us-west-2"
+  region = "eu-central-1"
 }
 
 provider "aws" {
@@ -17,7 +17,7 @@ module "eks_clickhouse" {
   # Set to true if you want to use a public load balancer (and expose ports to the public Internet)
   clickhouse_cluster_enable_loadbalancer = false
 
-  eks_cluster_name = "my-eks-cluster"
+  eks_cluster_name = "osmola-eks-cluster"
   eks_region       = local.region
   eks_cidr         = "10.0.0.0/16"
   eks_cluster_version = "1.32"
@@ -40,37 +40,9 @@ module "eks_clickhouse" {
 
   eks_node_pools = [
     {
-      name          = "clickhouse"
-      instance_type = "m6i.large"
-      desired_size  = 0
-      max_size      = 10
-      min_size      = 0
-      zones         = ["${local.region}a"]
-      # zones         = ["${local.region}a", "${local.region}b", "${local.region}c"]
-      #taints        = [{
-      #   key    = "antalya"
-      #   value  = "clickhouse"
-      #   effect = "NO_SCHEDULE"
-      #}]
-    },
-    {
-      name          = "clickhouse-swarm"
-      instance_type = "m6i.xlarge"
-      desired_size  = 0
-      max_size      = 20
-      min_size      = 0
-      zones         = ["${local.region}a"]
-      # zones         = ["${local.region}a", "${local.region}b", "${local.region}c"]
-      taints        = [{
-         key    = "antalya"
-         value  = "swarm"
-         effect = "NO_SCHEDULE"
-      }]
-    },
-    {
       name          = "clickhouse-nvme-swarm"
       instance_type = "i8g.xlarge"
-      ami_type      = "AL2_ARM_64"
+      ami_type      = "AL2023_ARM_64_STANDARD"
       desired_size  = 0
       max_size      = 20
       min_size      = 0
@@ -84,7 +56,7 @@ module "eks_clickhouse" {
       labels        = {
          "aws.amazon.com/eks-local-ssd" = "true"
       }
-      # This should add a tag on the EKS node group but does not. 
+      # This should add a tag on the EKS node group but does not.
       # Add the tag manually. See
       # https://github.com/Altinity/terraform-aws-eks-clickhouse/issues/27
       tags = {
@@ -93,7 +65,8 @@ module "eks_clickhouse" {
     },
     {
       name          = "system"
-      instance_type = "t3.large"
+      instance_type = "t4g.large"
+      ami_type      = "AL2023_ARM_64_STANDARD"
       desired_size  = 1
       max_size      = 10
       min_size      = 0

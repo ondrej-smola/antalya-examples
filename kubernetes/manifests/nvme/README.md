@@ -84,6 +84,22 @@ which also provides a draft workaround to enable the Kubernetes cluster
 autoscaler to complete pod deployments when the pod depends on storage
 that is allocated locally on the VM once it scales up.
 
+
+## Swarm using NVMe with local-path volumes (Experimental)
+
+This is based on the [Local Path Provisioner](https://github.com/rancher/local-path-provisioner)
+
+It creates PVs as directories inside the worker's local NVMe drives RAID 0 array 
+It combines the eks-nvme-ssd-provisioner ideas with the local-path-provisioner logic.
+
+```shell
+kubectl apply -f local-path-provisioner.yaml
+# Install ClickHouse cluster using
+kubectl apply -f swarm-local-path.yaml 
+```
+
+
+
 ### Prerequisites
 
 * The daemonset pod spec must match the
